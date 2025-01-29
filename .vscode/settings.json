@@ -1,0 +1,12 @@
+{
+    "cSpell.words": [
+        "ZAIM"
+    ],
+    "editor.codeActionsOnSave": {
+    // 常にオーガナイズインポートを保存時に効かせることができる
+    // "source.organizeImports.biome": "always"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+}
