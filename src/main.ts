@@ -1,10 +1,6 @@
 import * as fs from "node:fs";
 import * as csvWriter from "csv-writer";
-import { pipeline } from "node:stream";
-import { promisify } from "node:util";
-import { Readable } from "node:stream";
 import { fetchSpendingData } from "./zaim-outcome.script";
-import { generateOAuthHeader } from "./zaim-auth.script";
 
 /**
  * Zaim API 支出データエクスポートツール
@@ -25,53 +21,7 @@ import { generateOAuthHeader } from "./zaim-auth.script";
  *
  *   4. 出力:
  *      - CSVファイル: spending_data-YYYYMMDD-HHMMSS.csv (実行時のタイムスタンプ付き)
- *      - 画像ファイル: ./images-YYYYMMDD-HHMMSS/ ディレクトリ（実行時のタイムスタンプ付き）
  */
-
-
-
-const pipelineAsync = promisify(pipeline);
-
-const ACCESS_TOKEN = process.env.ZAIM_ACCESS_TOKEN || "";
-const ACCESS_SECRET = process.env.ZAIM_ACCESS_SECRET || "";
-
-// 画像ダウンロード関数（OAuth認証付き）
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export const downloadImages = async (data: any[], outputDir: string) => {
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
-
-  for (const item of data) {
-    if (item.image_url) {
-      const imagePath = `${outputDir}/${item.id}.jpg`;
-
-      console.log(`📥 Downloading image: ${item.image_url}`);
-
-      try {
-        // Zaim APIの画像URLは認証が必要な場合があるため、OAuthヘッダーを追加
-        const headers: HeadersInit = {
-          Authorization: generateOAuthHeader("GET", item.image_url, ACCESS_TOKEN, ACCESS_SECRET),
-        };
-
-        const response = await fetch(item.image_url, { headers });
-        if (!response.ok || !response.body) {
-          console.warn(`⚠ Failed to download image for ID ${item.id}: ${response.statusText}`);
-          continue;
-        }
-
-        // Node.js の ReadableStream に変換して保存
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        const readable = Readable.fromWeb(response.body as any);
-        await pipelineAsync(readable, fs.createWriteStream(imagePath));
-
-        console.log("✅ Image downloaded:", imagePath);
-      } catch (error) {
-        console.error(`❌ Failed to download image for ID ${item.id}:`, error);
-      }
-    }
-  }
-};
 
 // CSV出力関数（UTF-8 BOM付き）
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -129,19 +79,15 @@ export const exportToCsv = async (data: any[], filePath: string) => {
   const now = new Date();
   const timestamp = now.toISOString().replace(/[-:]/g, "").slice(0, 15).replace("T", "-"); // YYYYMMDD-HHMMSS
   const csvFilePath = `./spending_data-${timestamp}.csv`;  // 出力CSVファイル名（日時付き）
-  const imageOutputDir = `./images-${timestamp}`;  // 画像出力ディレクトリ（日時付き）
 
   try {
     console.log("🚀 Starting data extraction...");
     const data = await fetchSpendingData(startDate, endDate);
+    console.log(`📊 Fetched ${data.length} records`);
 
     console.log("🚀 Starting CSV export...");
     await exportToCsv(data, csvFilePath);
     console.log("🎉 CSV export completed:", csvFilePath);
-
-    console.log("📸 Starting image download...");
-    await downloadImages(data, imageOutputDir);
-    console.log("🎉 Image download completed.");
   } catch (error) {
     console.error("❌ Error occurred:", error);
   }
