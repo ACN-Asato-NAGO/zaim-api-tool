@@ -1,3 +1,25 @@
+/**
+ * Zaim API 支出データエクスポートツール
+ *
+ * Usage:
+ *   1. .env ファイルに以下の環境変数を設定:
+ *      - ZAIM_CONSUMER_KEY: Zaim API の Consumer Key
+ *      - ZAIM_CONSUMER_SECRET: Zaim API の Consumer Secret
+ *      - ZAIM_ACCESS_TOKEN: Zaim API の Access Token
+ *      - ZAIM_ACCESS_SECRET: Zaim API の Access Secret
+ *
+ *   2. 実行:
+ *      npm start
+ *
+ *   3. 期間の変更:
+ *      startDate と endDate を編集して取得期間を変更できます
+ *      日付形式: "YYYY-MM-DD"
+ *
+ *   4. 出力:
+ *      - CSVファイル: spending_data-2025.csv (デフォルト)
+ *      - 画像ファイル: ./images/ ディレクトリ
+ */
+
 import * as fs from "node:fs";
 import * as csvWriter from "csv-writer";
 import { pipeline } from "node:stream";
@@ -80,10 +102,13 @@ export const exportToCsv = async (data: any[], filePath: string) => {
 };
 
 (async () => {
-  const startDate = "2024-01-01";
-  const endDate = "2024-12-31";
-  const csvFilePath = "./spending_data.csv";
-  const imageOutputDir = "./images";
+  // ============================================
+  // 設定: ここで取得期間と出力ファイル名を変更できます
+  // ============================================
+  const startDate = "2025-01-01";  // 開始日 (YYYY-MM-DD形式)
+  const endDate = "2025-12-31";    // 終了日 (YYYY-MM-DD形式)
+  const csvFilePath = "./spending_data-2025.csv";  // 出力CSVファイル名
+  const imageOutputDir = "./images";  // 画像出力ディレクトリ
 
   try {
     console.log("🚀 Starting data extraction...");
