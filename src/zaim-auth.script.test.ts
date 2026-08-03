@@ -1,13 +1,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { generateOAuthHeader } from "./zaim-auth.script";
 
 describe("generateOAuthHeader", () => {
   const TEST_URL = "https://api.zaim.net/v2/home/money";
   const TEST_METHOD = "GET";
 
-  beforeEach(() => {
+  let generateOAuthHeader: (
+    method: string,
+    url: string,
+    token?: string,
+    tokenSecret?: string
+  ) => string;
+
+  beforeEach(async () => {
+    vi.resetModules();
     vi.stubEnv("ZAIM_CONSUMER_KEY", "test_consumer_key");
     vi.stubEnv("ZAIM_CONSUMER_SECRET", "test_consumer_secret");
+    const mod = await import("./zaim-auth.script");
+    generateOAuthHeader = mod.generateOAuthHeader;
   });
 
   afterEach(() => {
@@ -37,14 +46,6 @@ describe("generateOAuthHeader", () => {
     expect(nonce1).toBeDefined();
     expect(nonce2).toBeDefined();
     expect(nonce1).not.toBe(nonce2);
-  });
-
-  it("should produce different Authorization headers on each call due to random nonce", () => {
-    // The nonce is crypto.randomBytes(16) so headers must always differ
-    const header1 = generateOAuthHeader(TEST_METHOD, TEST_URL);
-    const header2 = generateOAuthHeader(TEST_METHOD, TEST_URL);
-
-    expect(header1).not.toBe(header2);
   });
 
   it("should include oauth_token when a token is provided", () => {

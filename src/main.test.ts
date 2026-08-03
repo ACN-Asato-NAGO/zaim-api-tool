@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import * as fs from "node:fs";
+import { randomUUID } from "node:crypto";
 
 // Hoist this mock before main.ts is imported so that its top-level IIFE
 // receives the mocked fetchSpendingData and does not hit the real API.
 vi.mock("./zaim-outcome.script", () => ({
-  fetchSpendingData: vi.fn().mockRejectedValue(new Error("skipped in test")),
+  fetchSpendingData: vi.fn().mockResolvedValue([]),
 }));
 
 import { exportToCsv } from "./main";
@@ -19,7 +20,7 @@ describe("exportToCsv", () => {
   });
 
   it("should write a CSV file with the expected headers and data values", async () => {
-    tempFilePath = `/tmp/test-spending-${Date.now()}.csv`;
+    tempFilePath = `/tmp/test-spending-${randomUUID()}.csv`;
 
     const sampleData = [
       {
@@ -58,7 +59,7 @@ describe("exportToCsv", () => {
   });
 
   it("should start with a UTF-8 BOM (\\uFEFF)", async () => {
-    tempFilePath = `/tmp/test-spending-${Date.now()}.csv`;
+    tempFilePath = `/tmp/test-spending-${randomUUID()}.csv`;
 
     const sampleData = [
       {
