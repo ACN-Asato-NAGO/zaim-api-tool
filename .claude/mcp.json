@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "zaim": {
+      "command": "npm",
+      "args": ["run", "mcp"],
+      "cwd": "/Users/asato.nago/ghq/github.com/75asa/zaim-api-tool"
+    }
+  }
+}
