@@ -37,7 +37,8 @@ export const fetchSpendingData = async (startDate: string, endDate: string) => {
 (async () => {
   try {
     console.log("🚀 Starting data extraction...");
-    const data = await fetchSpendingData("2024-01-01", "2024-12-31");
+    const year = process.argv[2] ?? process.env.ZAIM_YEAR ?? new Date().getFullYear().toString();
+    const data = await fetchSpendingData(`${year}-01-01`, `${year}-12-31`);
     console.log("✅ Data fetched successfully:", data);
   } catch (error) {
     console.error("❌ Error occurred:", error);
