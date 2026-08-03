@@ -27,14 +27,3 @@ export const fetchSpendingData = async (startDate: string, endDate: string) => {
   return JSON.parse(text).money;
 };
 
-// **メイン処理**
-(async () => {
-  try {
-    console.log("🚀 Starting data extraction...");
-    const year = process.argv[2] ?? process.env.ZAIM_YEAR ?? new Date().getFullYear().toString();
-    const data = await fetchSpendingData(`${year}-01-01`, `${year}-12-31`);
-    console.log("✅ Data fetched successfully:", data);
-  } catch (error) {
-    console.error("❌ Error occurred:", error);
-  }
-})();
