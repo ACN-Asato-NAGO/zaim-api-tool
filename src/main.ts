@@ -71,9 +71,12 @@ export const exportToCsv = async (data: any[], filePath: string) => {
 (async () => {
   // ============================================
   // 設定: ここで取得期間を変更できます
+  // CLI引数 > 環境変数 ZAIM_YEAR > 現在の年 の優先順位で年を解決します
+  // 例: npm start -- 2024
   // ============================================
-  const startDate = "2025-01-01";  // 開始日 (YYYY-MM-DD形式)
-  const endDate = "2025-12-31";    // 終了日 (YYYY-MM-DD形式)
+  const year = process.argv[2] ?? process.env.ZAIM_YEAR ?? new Date().getFullYear().toString();
+  const startDate = `${year}-01-01`;  // 開始日 (YYYY-MM-DD形式)
+  const endDate = `${year}-12-31`;    // 終了日 (YYYY-MM-DD形式)
 
   // 実行時のタイムスタンプを生成（YYYYMMDD-HHMMSS形式）
   const now = new Date();

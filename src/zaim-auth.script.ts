@@ -22,9 +22,6 @@ const generateSignature = (method: string, url: string, params: Record<string, s
   const baseString = `${method.toUpperCase()}&${encodeURIComponent(urlObject.origin + urlObject.pathname)}&${encodeURIComponent(sortedParams)}`;
   const signingKey = `${encodeURIComponent(CONSUMER_SECRET)}&${encodeURIComponent(tokenSecret)}`;
 
-  console.log("🔍 Base String:", baseString);
-  console.log("🔍 Signing Key:", signingKey);
-
   return crypto.createHmac("sha1", signingKey).update(baseString).digest("base64");
 };
 
@@ -50,8 +47,6 @@ export const generateOAuthHeader = (
   }
 
   params.oauth_signature = generateSignature(method, url, params, tokenSecret);
-
-  console.log("🔍 Generated OAuth Params:", params);
 
   return `OAuth ${Object.keys(params)
     .map((key) => `${key}="${encodeURIComponent(params[key])}"`)
