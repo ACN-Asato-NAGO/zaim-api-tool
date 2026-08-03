@@ -1,34 +1,10 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { generateOAuthHeader } from "./zaim-auth.script";
+import { fetchSpendingData } from "./zaim-outcome.script";
 
 // Redirect console.log to stderr to protect stdio MCP transport
 console.log = console.error;
-
-const API_BASE = "https://api.zaim.net/v2";
-const ACCESS_TOKEN = process.env.ZAIM_ACCESS_TOKEN ?? "";
-const ACCESS_SECRET = process.env.ZAIM_ACCESS_SECRET ?? "";
-
-const fetchSpendingData = async (startDate: string, endDate: string): Promise<unknown> => {
-  const url = new URL(`${API_BASE}/home/money`);
-  url.searchParams.append("mode", "payment");
-  url.searchParams.append("start_date", startDate);
-  url.searchParams.append("end_date", endDate);
-
-  const headers = {
-    Authorization: generateOAuthHeader("GET", url.toString(), ACCESS_TOKEN, ACCESS_SECRET),
-  };
-
-  const response = await fetch(url.toString(), { headers });
-  const text = await response.text();
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch spending data: ${response.statusText} - ${text}`);
-  }
-
-  return (JSON.parse(text) as { money: unknown }).money;
-};
 
 const server = new Server(
   { name: "zaim", version: "1.0.0" },
