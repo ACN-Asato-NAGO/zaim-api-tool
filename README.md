@@ -17,7 +17,11 @@ npm install
 
 ### 2. 環境変数の設定
 
-`.env` ファイルを作成し、以下の環境変数を設定してください：
+`.env.example` をコピーして `.env` を作成し、各値を設定してください：
+
+```bash
+cp .env.example .env
+```
 
 ```env
 ZAIM_CONSUMER_KEY=your_consumer_key
@@ -33,20 +37,57 @@ ZAIM_ACCESS_SECRET=your_access_secret
 ### 基本的な使い方
 
 ```bash
+# 当年（実行時の年）のデータを取得
 npm start
+
+# 年を指定して取得
+npm start -- 2024
+
+# 環境変数で年を指定
+ZAIM_YEAR=2024 npm start
 ```
 
-デフォルトでは、2025年1月1日から2025年12月31日までのデータを取得し、`spending_data-2025.csv` に出力します。
+### 年の指定方法
 
-### 期間の変更
+優先順位: CLI 引数 > 環境変数 `ZAIM_YEAR` > 実行時の現在年
 
-`src/main.ts` の以下の部分を編集して、取得期間を変更できます：
+| 方法 | 例 |
+|------|-----|
+| CLI 引数 | `npm start -- 2024` |
+| 環境変数 | `ZAIM_YEAR=2024 npm start` |
+| デフォルト | `npm start`（実行時の年を自動取得）|
 
-```typescript
-const startDate = "2025-01-01";  // 開始日（YYYY-MM-DD形式）
-const endDate = "2025-12-31";    // 終了日（YYYY-MM-DD形式）
-const csvFilePath = "./spending_data-2025.csv";  // 出力CSVファイル名
+### MCP サーバーとして使う
+
+Claude Code から直接 Zaim データを参照できる MCP サーバーとして起動できます。
+
+#### 起動
+
+```bash
+npm run mcp
 ```
+
+#### Claude Code への登録
+
+`.claude/mcp.json` を作成し、`cwd` を自環境のパスに書き換えてください：
+
+```json
+{
+  "mcpServers": {
+    "zaim": {
+      "command": "npm",
+      "args": ["run", "mcp"],
+      "cwd": "/path/to/zaim-api-tool"
+    }
+  }
+}
+```
+
+#### 使えるツール
+
+| ツール名 | 説明 | パラメータ |
+|----------|------|-----------|
+| `get_spending` | 指定期間の支出データを取得 | `start_date` (YYYY-MM-DD), `end_date` (YYYY-MM-DD) |
 
 ### 出力ファイル
 
