@@ -69,15 +69,14 @@ npm run mcp
 
 #### Claude Code への登録
 
-`.claude/mcp.json` を作成し、`cwd` を自環境のパスに書き換えてください：
+リポジトリルートの `.claude/mcp.json` に設定済みです。Claude Code がプロジェクトを開いていれば自動的に認識されます。
 
 ```json
 {
   "mcpServers": {
     "zaim": {
       "command": "npm",
-      "args": ["run", "mcp"],
-      "cwd": "/path/to/zaim-api-tool"
+      "args": ["run", "mcp"]
     }
   }
 }
